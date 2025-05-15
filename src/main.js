@@ -208,6 +208,8 @@ const sketch = (p) => {
       requiredInput.value(formDefaults.required);
       capacityInput.value(formDefaults.capacity);
 
+      buses.sort((a, b) => a.arrival - b.arrival);
+
       // Recalculate schedule after adding a bus
       schedule = makeSchedule(fabricateBuses(timeSlider.value()));
     });
