@@ -124,6 +124,8 @@ function sample(time, schedule) {
 }
 
 const sketch = (p) => {
+  let showBusList = false;
+
   p.setup = () => {
     p.createCanvas(WIDTH, HEIGHT);
     timeSlider = p.createSlider(0, CHARGE_DURATION_MINUTES, 0, 1);
@@ -140,6 +142,92 @@ const sketch = (p) => {
     buses.push({ arrival: 310, battery: p.random(0, 20), required: 160, capacity: 160 });
     buses.push({ arrival: 330, battery: p.random(0, 20), required: 160, capacity: 160 });
     schedule = makeSchedule(fabricateBuses(0));
+
+    let form = p.createDiv();
+    form.position(50, HEIGHT - 80);
+    form.style('width', '700px');
+
+    let arrivalInput = p.createInput('');
+    arrivalInput.attribute('placeholder', 'Arrival Time (minutes)');
+    form.child(arrivalInput);
+
+    let batteryInput = p.createInput('');
+    batteryInput.attribute('placeholder', 'Battery Level (0 - 100%)');
+    form.child(batteryInput);
+
+    let requiredInput = p.createInput('');
+    requiredInput.attribute('placeholder', 'Required Battery (kW)');
+    form.child(requiredInput);
+
+    let capacityInput = p.createInput('');
+    capacityInput.attribute('placeholder', 'Capacity (kW)');
+    form.child(capacityInput);
+
+    let addButton = p.createButton('Add Bus');
+    form.child(addButton);
+
+    let formDefaults = {
+      arrival: Math.floor(p.random(0, CHARGE_DURATION_MINUTES)),
+      battery: parseFloat(p.random(0, 30).toFixed(1)),
+      required: parseFloat(p.random(50, 160).toFixed(1)),
+      capacity: parseFloat(p.random(100, 200).toFixed(1)),
+    };
+
+    arrivalInput.value(formDefaults.arrival);
+    batteryInput.value(formDefaults.battery);
+    requiredInput.value(formDefaults.required);
+    capacityInput.value(formDefaults.capacity);
+
+    addButton.mousePressed(() => {
+      let arrival = parseInt(arrivalInput.value());
+      let battery = parseFloat(batteryInput.value());
+      let required = parseFloat(requiredInput.value());
+      let capacity = parseFloat(capacityInput.value());
+
+      if (!isNaN(arrival) && !isNaN(battery) && !isNaN(required) && !isNaN(capacity)) {
+        buses.push({
+          arrival: arrival,
+          battery: battery,
+          required: required,
+          capacity: capacity,
+        });
+        console.log("New bus added:", buses[buses.length - 1]);
+      }
+
+      // Set new default values
+      formDefaults = {
+        arrival: Math.floor(p.random(0, CHARGE_DURATION_MINUTES)),
+        battery: parseFloat(p.random(0, 30).toFixed(1)),
+        required: parseFloat(p.random(50, 160).toFixed(1)),
+        capacity: parseFloat(p.random(100, 200).toFixed(1)),
+      };
+
+      // Update input fields with new defaults
+      arrivalInput.value(formDefaults.arrival);
+      batteryInput.value(formDefaults.battery);
+      requiredInput.value(formDefaults.required);
+      capacityInput.value(formDefaults.capacity);
+
+      // Recalculate schedule after adding a bus
+      schedule = makeSchedule(fabricateBuses(timeSlider.value()));
+    });
+
+    let toggleBusListButton = p.createButton('Show Bus List');
+    form.child(toggleBusListButton);
+    toggleBusListButton.mousePressed(() => {
+      showBusList = !showBusList;
+      toggleBusListButton.html(showBusList ? 'Hide Bus List' : 'Show Bus List');
+    });
+
+    let removeAllButton = p.createButton('Remove All Buses');
+    form.child(removeAllButton);
+    removeAllButton.mousePressed(() => {
+      buses = [];
+      schedule = [];
+      activeBuses = [];
+      console.log("All buses removed");
+    });
+
   };
 
   p.draw = () => {
@@ -202,6 +290,36 @@ const sketch = (p) => {
       minute = Math.floor(t % 60);
       let endTimeStr = `${hour % 24}:${minute.toString().padStart(2, '0')}`;
       p.text(`Bus ${item.bus}: ${startTimeStr} ~ ${endTimeStr} @ ${(60 * item.speed).toFixed(1)} kWH`, WIDTH - w, y);
+    }
+
+    // Draw Bus List Overlay
+    if (showBusList) {
+      p.fill(255, 255, 255, 200);
+      p.rect(50, 100, WIDTH - 100, HEIGHT - 200);
+      p.fill(0);
+      p.textSize(14);
+      p.text("Scenario", 60, 120);
+
+      let y = 140;
+      let colX = [60, 160, 260, 360, 460];
+      let headers = ["Arrival", "Battery", "Required", "Capacity"];
+
+      // Draw table headers
+      for (let i = 0; i < headers.length; i++) {
+        p.text(headers[i], colX[i], y);
+      }
+
+      y += 20;
+
+      // Draw table rows
+      buses.forEach((bus, index) => {
+        // p.text(index, 60, y);
+        p.text(bus.arrival, colX[0], y);
+        p.text(bus.battery.toFixed(1), colX[1], y);
+        p.text(bus.required.toFixed(1), colX[2], y);
+        p.text(bus.capacity.toFixed(1), colX[3], y);
+        y += 20;
+      });
     }
   };
 
