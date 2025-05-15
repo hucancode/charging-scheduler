@@ -124,12 +124,12 @@ function sample(time, schedule) {
 }
 
 const sketch = (p) => {
-  let showBusList = false;
+  let showBusList = true;
 
   p.setup = () => {
     p.createCanvas(WIDTH, HEIGHT);
     timeSlider = p.createSlider(0, CHARGE_DURATION_MINUTES, 0, 1);
-    timeSlider.position(50, HEIGHT - 30);
+    timeSlider.position(50, 10);
     timeSlider.style('width', '700px');
     buses.push({ arrival: 70, battery: p.random(0, 20), required: 80, capacity: 100 });
     buses.push({ arrival: 140, battery: p.random(0, 20), required: 120, capacity: 160 });
@@ -144,24 +144,32 @@ const sketch = (p) => {
     schedule = makeSchedule(fabricateBuses(0));
 
     let form = p.createDiv();
-    form.position(50, HEIGHT - 80);
+    form.position(WIDTH + 30, 80);
     form.style('width', '700px');
 
+    form.child(p.createElement('label', 'Arrival Time (minutes):'));
+    form.child(p.createElement('br'));
     let arrivalInput = p.createInput('');
-    arrivalInput.attribute('placeholder', 'Arrival Time (minutes)');
     form.child(arrivalInput);
+    form.child(p.createElement('br'));
 
+    form.child(p.createElement('label', 'Battery Level (0 - 100%):'));
+    form.child(p.createElement('br'));
     let batteryInput = p.createInput('');
-    batteryInput.attribute('placeholder', 'Battery Level (0 - 100%)');
     form.child(batteryInput);
+    form.child(p.createElement('br'));
 
+    form.child(p.createElement('label', 'Required Battery (kW):'));
+    form.child(p.createElement('br'));
     let requiredInput = p.createInput('');
-    requiredInput.attribute('placeholder', 'Required Battery (kW)');
     form.child(requiredInput);
+    form.child(p.createElement('br'));
 
+    form.child(p.createElement('label', 'Capacity (kW):'));
+    form.child(p.createElement('br'));
     let capacityInput = p.createInput('');
-    capacityInput.attribute('placeholder', 'Capacity (kW)');
     form.child(capacityInput);
+    form.child(p.createElement('br'));
 
     let addButton = p.createButton('Add Bus');
     form.child(addButton);
@@ -220,7 +228,6 @@ const sketch = (p) => {
       showBusList = !showBusList;
       toggleBusListButton.html(showBusList ? 'Hide Bus List' : 'Show Bus List');
     });
-
     let removeAllButton = p.createButton('Remove All Buses');
     form.child(removeAllButton);
     removeAllButton.mousePressed(() => {
