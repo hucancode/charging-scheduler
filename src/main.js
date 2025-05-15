@@ -124,16 +124,14 @@ function sample(time, schedule) {
 }
 const testGeneral = () => {
     buses = [
-      { arrival: 70, battery: 10, required: 80, capacity: 100 },
-      { arrival: 140, battery: 10, required: 120, capacity: 160 },
-      { arrival: 180, battery: 18, required: 50, capacity: 160 },
-      { arrival: 200, battery: 18, required: 1600, capacity: 1600 },
-      { arrival: 290, battery: 18, required: 1600, capacity: 1600 },
-      { arrival: 300, battery: 14, required: 30, capacity: 160 },
-      { arrival: 300, battery: 14, required: 160, capacity: 160 },
-      { arrival: 310, battery: 16, required: 160, capacity: 160 },
-      { arrival: 310, battery: 16, required: 160, capacity: 160 },
-      { arrival: 330, battery: 16, required: 160, capacity: 160 },
+      { arrival: 70, battery: 70, required: 80, capacity: 100 },
+      { arrival: 140, battery: 50, required: 70, capacity: 160 },
+      { arrival: 180, battery: 38, required: 50, capacity: 160 },
+      { arrival: 300, battery: 24, required: 30, capacity: 160 },
+      { arrival: 305, battery: 54, required: 80, capacity: 160 },
+      { arrival: 310, battery: 106, required: 100, capacity: 160 },
+      { arrival: 315, battery: 56, required: 90, capacity: 160 },
+      { arrival: 330, battery: 36, required: 80, capacity: 160 },
     ];
 };
 
