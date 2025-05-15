@@ -122,6 +122,51 @@ function sample(time, schedule) {
   }
   return activeBuses;
 }
+const testGeneral = () => {
+    buses = [
+      { arrival: 70, battery: 10, required: 80, capacity: 100 },
+      { arrival: 140, battery: 10, required: 120, capacity: 160 },
+      { arrival: 180, battery: 18, required: 50, capacity: 160 },
+      { arrival: 200, battery: 18, required: 1600, capacity: 1600 },
+      { arrival: 290, battery: 18, required: 1600, capacity: 1600 },
+      { arrival: 300, battery: 14, required: 30, capacity: 160 },
+      { arrival: 300, battery: 14, required: 160, capacity: 160 },
+      { arrival: 310, battery: 16, required: 160, capacity: 160 },
+      { arrival: 310, battery: 16, required: 160, capacity: 160 },
+      { arrival: 330, battery: 16, required: 160, capacity: 160 },
+    ];
+};
+
+const testHighCapacity = () => {
+  buses = [
+    { arrival: 60, battery: 5, required: 300, capacity: 350 },
+    { arrival: 120, battery: 10, required: 400, capacity: 450 },
+    { arrival: 240, battery: 20, required: 500, capacity: 550 },
+  ];
+};
+
+const testLowCapacity = () => {
+  buses = [
+    { arrival: 30, battery: 50, required: 60, capacity: 70 },
+    { arrival: 150, battery: 40, required: 45, capacity: 50 },
+    { arrival: 300, battery: 20, required: 30, capacity: 40 },
+  ];
+};
+
+const testOverlappingArrivals = () => {
+  buses = [
+    { arrival: 100, battery: 30, required: 80, capacity: 100 },
+    { arrival: 100, battery: 20, required: 60, capacity: 80 },
+    { arrival: 100, battery: 10, required: 50, capacity: 70 },
+  ];
+};
+
+const testSlowCharge = () => {
+  buses = [
+    { arrival: 70, battery: 0, required: 80, capacity: 100 },
+  ];
+}
+
 
 const sketch = (p) => {
   let showBusList = true;
@@ -131,22 +176,13 @@ const sketch = (p) => {
     timeSlider = p.createSlider(0, CHARGE_DURATION_MINUTES, 0, 1);
     timeSlider.position(50, 10);
     timeSlider.style('width', '700px');
-    buses.push({ arrival: 70, battery: p.random(0, 20), required: 80, capacity: 100 });
-    buses.push({ arrival: 140, battery: p.random(0, 20), required: 120, capacity: 160 });
-    buses.push({ arrival: 180, battery: p.random(0, 20), required: 50, capacity: 160 });
-    buses.push({ arrival: 200, battery: p.random(0, 20), required: 1600, capacity: 1600 });
-    buses.push({ arrival: 290, battery: p.random(0, 20), required: 1600, capacity: 1600 });
-    buses.push({ arrival: 300, battery: p.random(0, 20), required: 30, capacity: 160 });
-    buses.push({ arrival: 300, battery: p.random(0, 20), required: 160, capacity: 160 });
-    buses.push({ arrival: 310, battery: p.random(0, 20), required: 160, capacity: 160 });
-    buses.push({ arrival: 310, battery: p.random(0, 20), required: 160, capacity: 160 });
-    buses.push({ arrival: 330, battery: p.random(0, 20), required: 160, capacity: 160 });
-    schedule = makeSchedule(fabricateBuses(0));
+    testGeneral();
 
     let form = p.createDiv();
     form.position(WIDTH + 30, 80);
     form.style('width', '700px');
 
+    form.child(p.createElement('h3', 'Add Bus'));
     form.child(p.createElement('label', 'Arrival Time (minutes):'));
     form.child(p.createElement('br'));
     let arrivalInput = p.createInput('');
@@ -222,7 +258,7 @@ const sketch = (p) => {
       schedule = makeSchedule(fabricateBuses(timeSlider.value()));
     });
 
-    let toggleBusListButton = p.createButton('Show Bus List');
+    let toggleBusListButton = p.createButton('Hide Bus List');
     form.child(toggleBusListButton);
     toggleBusListButton.mousePressed(() => {
       showBusList = !showBusList;
@@ -237,6 +273,44 @@ const sketch = (p) => {
       console.log("All buses removed");
     });
 
+    let testForm = p.createDiv();
+    testForm.position(WIDTH + 30, 320);
+    testForm.child(p.createElement('h3', 'Test Cases'));
+    let testGeneralButton = p.createButton('Test General');
+    testForm.child(testGeneralButton);
+    testGeneralButton.mousePressed(() => {
+      console.log("Test General", p);
+      testGeneral();
+      schedule = makeSchedule(fabricateBuses(timeSlider.value()));
+    });
+    let testSlowChargeButton = p.createButton('Test Slow Charge');
+    testForm.child(testSlowChargeButton);
+    testSlowChargeButton.mousePressed(() => {
+      testSlowCharge();
+      schedule = makeSchedule(fabricateBuses(timeSlider.value()));
+    });
+
+    // Add buttons for the new test cases
+    let testHighCapacityButton = p.createButton('Test High Capacity');
+    testForm.child(testHighCapacityButton);
+    testHighCapacityButton.mousePressed(() => {
+      testHighCapacity();
+      schedule = makeSchedule(fabricateBuses(timeSlider.value()));
+    });
+
+    let testLowCapacityButton = p.createButton('Test Low Capacity');
+    testForm.child(testLowCapacityButton);
+    testLowCapacityButton.mousePressed(() => {
+      testLowCapacity();
+      schedule = makeSchedule(fabricateBuses(timeSlider.value()));
+    });
+
+    let testOverlappingArrivalsButton = p.createButton('Test Overlapping Arrivals');
+    testForm.child(testOverlappingArrivalsButton);
+    testOverlappingArrivalsButton.mousePressed(() => {
+      testOverlappingArrivals();
+      schedule = makeSchedule(fabricateBuses(timeSlider.value()));
+    });
   };
 
   p.draw = () => {
